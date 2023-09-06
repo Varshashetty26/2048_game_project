@@ -199,6 +199,8 @@ int main(void)
                 }
             }
             break;
+        case 'y':
+        case 'Y':exit(0);
         }
 
         // Check for game over
