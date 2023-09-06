@@ -1,0 +1,430 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Define the game board and variables
+int code[4][4] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int temp[5];
+int move = 0;
+int score = 0;
+
+// Function to print the game board
+void print(void)
+{
+    int i, j;
+    printf("2048\n");
+    printf("W--UP  A--LEFT  S--DOWN  D--RIGHT  0--EXIT\n");
+    printf("Score:%d Move:%d\n", score, move);
+    printf("|-------------------|\n");
+    for (i = 0; i <= 3; i++)
+    {
+        for (j = 0; j <= 3; j++)
+        {
+            if (code[i][j] == 0)
+            {
+                printf("|    ");
+            }
+            else
+            {
+                printf("|%4d", code[i][j]);
+            }
+        }
+        printf("|\n|-------------------|\n");
+    }
+}
+
+// Function to combine and add numbers
+int add(void)
+{
+    int i;
+    int t = 0;
+    int change = 0;
+    do
+    {
+        for (i = 0; i <= 3; i++)
+        {
+            if (temp[i] == 0)
+            {
+                if (temp[i] != temp[i + 1])
+                    change = 1;
+                temp[i] = temp[i + 1];
+                temp[i + 1] = 0;
+            }
+        }
+        t++;
+    } while (t <= 3);
+
+    for (i = 1; i <= 3; i++)
+    {
+        if (temp[i] == temp[i - 1])
+        {
+            if (temp[i] != 0)
+            {
+                change = 1;
+                score = score + temp[i];
+            }
+            temp[i - 1] = temp[i - 1] * 2;
+            temp[i] = 0;
+        }
+    }
+
+    do
+    {
+        for (i = 0; i <= 3; i++)
+        {
+            if (temp[i] == 0)
+            {
+                temp[i] = temp[i + 1];
+                temp[i + 1] = 0;
+            }
+        }
+        t++;
+    } while (t <= 3);
+
+    return change;
+}
+
+// Main function
+int main(void)
+{
+    int gameover = 0;
+    int i, j;
+    int change = 1;
+    char input;
+
+    // Seed the random number generator
+    srand((unsigned)time(NULL));
+
+    while (gameover == 0)
+    {
+        if (change >= 1)
+        {
+            // Generate a random position for a new tile (2 or 4)
+            do
+            {
+                i = ((unsigned)rand()) % 4;
+                j = ((unsigned)rand()) % 4;
+            } while (code[i][j] != 0);
+
+            if (((unsigned)rand()) % 4 == 0)
+            {
+                code[i][j] = 4;
+            }
+            else
+            {
+                code[i][j] = 2;
+            }
+            move++;
+        }
+
+        // Print the game board and get user input
+        print();
+        input = getchar();
+        change = 0;
+
+        // Handle user input
+        switch (input)
+        {
+        case '0':
+            printf("Are you sure to exit?(y/n)");
+            input = getchar();
+            if (input == 'y' || input == 'Y')
+                exit(0);
+            break;
+        case 'W':
+        case 'w':
+            // Move up
+            for (j = 0; j <= 3; j++)
+            {
+                for (i = 0; i <= 3; i++)
+                {
+                    temp[i] = code[i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (i = 0; i <= 3; i++)
+                {
+                    code[i][j] = temp[i];
+                }
+            }
+            break;
+        case 'A':
+        case 'a':
+            // Move left
+            for (i = 0; i <= 3; i++)
+            {
+                for (j = 0; j <= 3; j++)
+                {
+                    temp[j] = code[i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (j = 0; j <= 3; j++)
+                {
+                    code[i][j] = temp[j];
+                }
+            }
+            break;
+        case 'S':
+        case 's':
+            // Move down
+            for (j = 0; j <= 3; j++)
+            {
+                for (i = 0; i <= 3; i++)
+                {
+                    temp[i] = code[3 - i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (i = 0; i <= 3; i++)
+                {
+                    code[3 - i][j] = temp[i];
+                }
+            }
+            break;
+        case 'D':
+        case 'd':
+            // Move right
+            for (i = 0; i <= 3; i++)
+            {
+                for (j = 0; j <= 3; j++)
+                {
+                    temp[j] = code[i][3 - j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (j = 0; j <= 3; j++)
+                {
+                    code[i][3 - j] = temp[j];
+                }
+            }
+            break;
+        }
+
+        // Check for game over
+        gameover = 1;
+        for (i = 0; i <= 3; i++)
+            for (j = 0; j <= 3; j++)
+                if (code[i][j] == 0)
+                    gameover = 0;
+    }
+
+    // Print game over message
+    printf("Game over!\n");
+    return 0;
+}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Define the game board and variables
+int code[4][4] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int temp[5];
+int move = 0;
+int score = 0;
+
+// Function to print the game board
+void print(void)
+{
+    int i, j;
+    printf("2048\n");
+    printf("W--UP  A--LEFT  S--DOWN  D--RIGHT  0--EXIT\n");
+    printf("Score:%d Move:%d\n", score, move);
+    printf("|-------------------|\n");
+    for (i = 0; i <= 3; i++)
+    {
+        for (j = 0; j <= 3; j++)
+        {
+            if (code[i][j] == 0)
+            {
+                printf("|    ");
+            }
+            else
+            {
+                printf("|%4d", code[i][j]);
+            }
+        }
+        printf("|\n|-------------------|\n");
+    }
+}
+
+// Function to combine and add numbers
+int add(void)
+{
+    int i;
+    int t = 0;
+    int change = 0;
+    do
+    {
+        for (i = 0; i <= 3; i++)
+        {
+            if (temp[i] == 0)
+            {
+                if (temp[i] != temp[i + 1])
+                    change = 1;
+                temp[i] = temp[i + 1];
+                temp[i + 1] = 0;
+            }
+        }
+        t++;
+    } while (t <= 3);
+
+    for (i = 1; i <= 3; i++)
+    {
+        if (temp[i] == temp[i - 1])
+        {
+            if (temp[i] != 0)
+            {
+                change = 1;
+                score = score + temp[i];
+            }
+            temp[i - 1] = temp[i - 1] * 2;
+            temp[i] = 0;
+        }
+    }
+
+    do
+    {
+        for (i = 0; i <= 3; i++)
+        {
+            if (temp[i] == 0)
+            {
+                temp[i] = temp[i + 1];
+                temp[i + 1] = 0;
+            }
+        }
+        t++;
+    } while (t <= 3);
+
+    return change;
+}
+
+// Main function
+int main(void)
+{
+    int gameover = 0;
+    int i, j;
+    int change = 1;
+    char input;
+
+    // Seed the random number generator
+    srand((unsigned)time(NULL));
+
+    while (gameover == 0)
+    {
+        if (change >= 1)
+        {
+            // Generate a random position for a new tile (2 or 4)
+            do
+            {
+                i = ((unsigned)rand()) % 4;
+                j = ((unsigned)rand()) % 4;
+            } while (code[i][j] != 0);
+
+            if (((unsigned)rand()) % 4 == 0)
+            {
+                code[i][j] = 4;
+            }
+            else
+            {
+                code[i][j] = 2;
+            }
+            move++;
+        }
+
+        // Print the game board and get user input
+        print();
+        input = getchar();
+        change = 0;
+
+        // Handle user input
+        switch (input)
+        {
+        case '0':
+            printf("Are you sure to exit?(y/n)");
+            input = getchar();
+            if (input == 'y' || input == 'Y')
+                exit(0);
+            break;
+        case 'W':
+        case 'w':
+            // Move up
+            for (j = 0; j <= 3; j++)
+            {
+                for (i = 0; i <= 3; i++)
+                {
+                    temp[i] = code[i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (i = 0; i <= 3; i++)
+                {
+                    code[i][j] = temp[i];
+                }
+            }
+            break;
+        case 'A':
+        case 'a':
+            // Move left
+            for (i = 0; i <= 3; i++)
+            {
+                for (j = 0; j <= 3; j++)
+                {
+                    temp[j] = code[i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (j = 0; j <= 3; j++)
+                {
+                    code[i][j] = temp[j];
+                }
+            }
+            break;
+        case 'S':
+        case 's':
+            // Move down
+            for (j = 0; j <= 3; j++)
+            {
+                for (i = 0; i <= 3; i++)
+                {
+                    temp[i] = code[3 - i][j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (i = 0; i <= 3; i++)
+                {
+                    code[3 - i][j] = temp[i];
+                }
+            }
+            break;
+        case 'D':
+        case 'd':
+            // Move right
+            for (i = 0; i <= 3; i++)
+            {
+                for (j = 0; j <= 3; j++)
+                {
+                    temp[j] = code[i][3 - j];
+                }
+                temp[4] = 0;
+                change = change + add();
+                for (j = 0; j <= 3; j++)
+                {
+                    code[i][3 - j] = temp[j];
+                }
+            }
+            break;
+        }
+
+        // Check for game over
+        gameover = 1;
+        for (i = 0; i <= 3; i++)
+            for (j = 0; j <= 3; j++)
+                if (code[i][j] == 0)
+                    gameover = 0;
+    }
+
+    // Print game over message
+    printf("Game over!\n");
+    return 0;
+}
